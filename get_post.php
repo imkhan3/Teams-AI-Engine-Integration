@@ -30,6 +30,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $query->setMode("chat");
         $query->setService("openai");
 
+        $embeddingsIndex= "your-index";
+        $embeddingsNamespace = "your-namespace";
+
+        $context = apply_filters('mwai_context_search', $context, $query, [
+            'embeddingsIndex' => $embeddingsIndex,
+            'embeddingsNamespace' => $embeddingsNamespace,
+        ]);
+
+        $content = $mwai_core->cleanSentences( $context['content'] );
+        $query->injectContext($content);
+
         // Return query result
         echo '{"type":"message", "text": '. json_encode($mwai_core->ai->run($query)->result) .'}';
     }
